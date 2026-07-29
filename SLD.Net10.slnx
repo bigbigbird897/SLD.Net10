@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/SLD.Net10.Communication/">
     <Project Path="ConnectionMqtt/ConnectionMqtt.csproj" Id="606d6df6-8c30-4bfe-8080-c8dfcde89a3d" />
+    <Project Path="ConnectModbusRtuWithTcp/ConnectionModbusRtuWithTcp.csproj" Id="4310bfbc-d20b-4d34-8270-bcc688785008" />
   </Folder>
   <Project Path="SLD.Net10.Common/SLD.Net10.Common.csproj" />
   <Project Path="SLD.Net10.Extension/SLD.Net10.Extension.csproj" />

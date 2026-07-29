@@ -7,7 +7,7 @@ namespace SLD.Net10.Controllers
     /// 实验定义和操作
     /// </summary>
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     [ApiExplorerSettings(GroupName = "实验定义和操作")]
     public class ExperimentDefinitionOperationController : ControllerBase
     {

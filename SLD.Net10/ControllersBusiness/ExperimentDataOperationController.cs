@@ -4,7 +4,7 @@
 /// 实验数据操作
 /// </summary>
 [ApiController]
-[Route("[controller]")]
+[Route("[controller]/[action]")]
 [ApiExplorerSettings(GroupName = "实验数据操作")]
 public class ExperimentDataOperationController : ControllerBase
 {

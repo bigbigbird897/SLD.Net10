@@ -1,6 +1,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
+using ConnectionModbusRtuWithTcp;
 using ConnectionMqtt;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -61,6 +62,8 @@ namespace SLD.Net10
                                         .FirstOrDefault()?.GroupName;
                                     return docName == groupName;
                                 });
+                // 注册自动Tag分组过滤器（核心）
+                options.OperationFilter<SwaggerTagGroupFilter>();
             });
 
             #endregion 二、基础框架服务注册
@@ -164,6 +167,19 @@ namespace SLD.Net10
             // 1. 注册MQTT服务为单例
             builder.Services.AddSingleton<IMqttClientService, MqttClientService>();
 
+            // 1. 在Program读取appsettings中所有Modbus设备配置
+            var modbusDeviceList = builder.Configuration
+                .GetSection("ModbusRtuDevices")
+                .Get<List<ModbusRtuWithTcpClientConfig>>() ?? new List<ModbusRtuWithTcpClientConfig>();
+
+            // 2. 注册Modbus服务，把预读取好的设备列表传入构造
+            builder.Services.AddSingleton<IModbusRtuWithTcpClient>(sp =>
+            {
+                var logger = sp.GetRequiredService<ILogger<ModbusRtuWithTcpClient>>();
+                return new ModbusRtuWithTcpClient(logger, modbusDeviceList);
+            });
+
+
             var app = builder.Build();
 
             // CodeFirst自动建库建表
@@ -207,13 +223,20 @@ namespace SLD.Net10
                 var mqttService = scope.ServiceProvider.GetRequiredService<IMqttClientService>();
                 await mqttService.InitAllClientsAsync();
             }
-
             // 程序退出时统一断开MQTT
             app.Lifetime.ApplicationStopping.Register(async () =>
             {
                 var mqttService = app.Services.GetRequiredService<IMqttClientService>();
                 await mqttService.DisconnectAllAsync();
             });
+
+            // 可选：启动时打印已加载的Modbus设备
+            using (var scope = app.Services.CreateScope())
+            {
+                var modbusClient = scope.ServiceProvider.GetRequiredService<IModbusRtuWithTcpClient>();
+                var deviceCodes = modbusClient.GetAllDeviceCodes();
+                Log.Logger.Information("已加载Modbus设备列表：{Devices}", string.Join(",", deviceCodes));
+            }
 
 
             // 返回构建完成的Host，外部可调用Run启动服务

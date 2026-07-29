@@ -35,6 +35,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\ConnectionMqtt\ConnectionMqtt.csproj" />
+		<ProjectReference Include="..\ConnectModbusRtuWithTcp\ConnectionModbusRtuWithTcp.csproj" />
 		<ProjectReference Include="..\SLD.Net10.Common\SLD.Net10.Common.csproj" />
 		<ProjectReference Include="..\SLD.Net10.Extension\SLD.Net10.Extension.csproj" />
 	</ItemGroup>
