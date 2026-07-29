@@ -1,6 +1,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
+using ConnectionMqtt;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -21,7 +22,7 @@ namespace SLD.Net10
     public class Program
     {
         // 提取公共静态方法：构建并返回IHost，给WPF调用
-        public static IHost BuildWebHost(string[] args)
+        public static async Task<IHost> BuildWebHostAsync(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,7 @@ namespace SLD.Net10
                 options.SwaggerDoc("手动控制", new OpenApiInfo { Title = "手动控制接口", Version = "v1" });
                 options.SwaggerDoc("物料定义和操作", new OpenApiInfo { Title = "物料定义和操作接口", Version = "v1" });
                 options.SwaggerDoc("点位标定", new OpenApiInfo { Title = "点位标定接口", Version = "v1" });
+                options.SwaggerDoc("其它后台功能", new OpenApiInfo { Title = "其它后台功能接口", Version = "v1" });
 
                 options.DocInclusionPredicate((docName, apiDesc) =>
                                 {
@@ -158,6 +160,10 @@ namespace SLD.Net10
 
             #endregion 五、SqlSugar ORM框架注册（PostgreSQL数据库）
 
+
+            // 1. 注册MQTT服务为单例
+            builder.Services.AddSingleton<IMqttClientService, MqttClientService>();
+
             var app = builder.Build();
 
             // CodeFirst自动建库建表
@@ -176,6 +182,7 @@ namespace SLD.Net10
                     opt.SwaggerEndpoint("/swagger/手动控制/swagger.json", "手动控制接口");
                     opt.SwaggerEndpoint("/swagger/物料定义和操作/swagger.json", "物料定义和操作接口");
                     opt.SwaggerEndpoint("/swagger/点位标定/swagger.json", "点位标定接口");
+                    opt.SwaggerEndpoint("/swagger/其它后台功能/swagger.json", "其它后台功能接口");
                     opt.RoutePrefix = "swagger";
                 });
             }
@@ -193,6 +200,21 @@ namespace SLD.Net10
             app.MapControllers();
 
             #endregion 八、请求管道中间件配置
+
+            // 2. 程序启动时初始化所有MQTT连接
+            using (var scope = app.Services.CreateScope())
+            {
+                var mqttService = scope.ServiceProvider.GetRequiredService<IMqttClientService>();
+                await mqttService.InitAllClientsAsync();
+            }
+
+            // 程序退出时统一断开MQTT
+            app.Lifetime.ApplicationStopping.Register(async () =>
+            {
+                var mqttService = app.Services.GetRequiredService<IMqttClientService>();
+                await mqttService.DisconnectAllAsync();
+            });
+
 
             // 返回构建完成的Host，外部可调用Run启动服务
             return app;
