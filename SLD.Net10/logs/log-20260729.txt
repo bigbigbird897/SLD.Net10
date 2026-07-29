@@ -1,0 +1,32 @@
+2026-07-29 09:20:22.174 [INF] Web后端服务启动完成，打开Swagger窗口
+2026-07-29 09:20:22.662 [INF] Now listening on: https://0.0.0.0:9666
+2026-07-29 09:20:22.764 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-29 09:20:22.764 [INF] Hosting environment: Development
+2026-07-29 09:20:22.764 [INF] Content root path: E:\SLD.Net10\SLD.Net10
+2026-07-29 09:20:24.263 [INF] Request starting HTTP/2 GET https://localhost:9666/swagger/index.html - null null
+2026-07-29 09:20:24.466 [INF] Request finished HTTP/2 GET https://localhost:9666/swagger/index.html - 304 null null 212.316ms
+2026-07-29 09:20:24.498 [INF] Request starting HTTP/2 GET https://localhost:9666/swagger/swagger-ui-bundle.js - null null
+2026-07-29 09:20:24.498 [INF] Request starting HTTP/2 GET https://localhost:9666/swagger/swagger-ui.css - null null
+2026-07-29 09:20:24.498 [INF] Request starting HTTP/2 GET https://localhost:9666/swagger/swagger-ui-standalone-preset.js - null null
+2026-07-29 09:20:24.498 [INF] Request starting HTTP/2 GET https://localhost:9666/swagger/index.css - null null
+2026-07-29 09:20:24.498 [INF] Request starting HTTP/2 GET https://localhost:9666/swagger/index.js - null null
+2026-07-29 09:20:24.502 [INF] Request starting HTTP/2 GET https://localhost:9666/_framework/aspnetcore-browser-refresh.js - null null
+2026-07-29 09:20:24.503 [INF] Request starting HTTP/2 GET https://localhost:9666/_vs/browserLink - null null
+2026-07-29 09:20:24.608 [INF] Request finished HTTP/2 GET https://localhost:9666/swagger/index.js - 304 null null 112.9131ms
+2026-07-29 09:20:24.655 [INF] Request finished HTTP/2 GET https://localhost:9666/swagger/swagger-ui-standalone-preset.js - 304 null null 164.5345ms
+2026-07-29 09:20:24.655 [INF] Request finished HTTP/2 GET https://localhost:9666/swagger/index.css - 304 null null 164.8372ms
+2026-07-29 09:20:24.655 [INF] Request finished HTTP/2 GET https://localhost:9666/swagger/swagger-ui.css - 304 null null 164.8534ms
+2026-07-29 09:20:24.657 [INF] Request finished HTTP/2 GET https://localhost:9666/_framework/aspnetcore-browser-refresh.js - 200 14923 application/javascript; charset=utf-8 157.5717ms
+2026-07-29 09:20:24.657 [INF] Request finished HTTP/2 GET https://localhost:9666/swagger/swagger-ui-bundle.js - 304 null null 165.8795ms
+2026-07-29 09:20:24.680 [INF] Request finished HTTP/2 GET https://localhost:9666/_vs/browserLink - 200 null text/javascript; charset=UTF-8 177.6117ms
+2026-07-29 09:20:25.269 [INF] Request starting HTTP/2 GET https://localhost:9666/swagger/实验数据操作/swagger.json - null null
+2026-07-29 09:20:25.285 [INF] Request finished HTTP/2 GET https://localhost:9666/swagger/实验数据操作/swagger.json - 200 null application/json;charset=utf-8 16.9486ms
+2026-07-29 09:20:28.256 [INF] Request starting HTTP/2 GET https://localhost:9666/swagger/实验定义和操作/swagger.json - null null
+2026-07-29 09:20:28.262 [INF] Request finished HTTP/2 GET https://localhost:9666/swagger/实验定义和操作/swagger.json - 200 null application/json;charset=utf-8 5.7539ms
+2026-07-29 09:20:32.967 [INF] Request starting HTTP/2 GET https://localhost:9666/ExperimentDefinitionOperation/ReadRegister?deviceId=1&addr=1 - null null
+2026-07-29 09:20:32.972 [INF] Executing endpoint 'SLD.Net10.Controllers.ExperimentDefinitionOperationController.ReadRegister (SLD.Net10)'
+2026-07-29 09:20:33.008 [INF] Route matched with {action = "ReadRegister", controller = "ExperimentDefinitionOperation"}. Executing controller action with signature System.Threading.Tasks.Task`1[SLD.Net10.Common.UnifiedReturn.ApiResult`1[System.Object]] ReadRegister(System.String, Int32) on controller SLD.Net10.Controllers.ExperimentDefinitionOperationController (SLD.Net10).
+2026-07-29 09:20:33.048 [INF] Executing ObjectResult, writing value of type 'SLD.Net10.Common.UnifiedReturn.ApiResult`1[[System.Object, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-07-29 09:20:33.059 [INF] Executed action SLD.Net10.Controllers.ExperimentDefinitionOperationController.ReadRegister (SLD.Net10) in 44.9936ms
+2026-07-29 09:20:33.059 [INF] Executed endpoint 'SLD.Net10.Controllers.ExperimentDefinitionOperationController.ReadRegister (SLD.Net10)'
+2026-07-29 09:20:33.059 [INF] Request finished HTTP/2 GET https://localhost:9666/ExperimentDefinitionOperation/ReadRegister?deviceId=1&addr=1 - 200 null application/json; charset=utf-8 91.9094ms

@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# 忽略文件
+logs/
+logs/sql/
+
 # User-specific files
 *.rsuser
 *.suo
