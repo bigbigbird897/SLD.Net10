@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="SLD.Net10.Common/SLD.Net10.Common.csproj" />
+  <Project Path="SLD.Net10.Extension/SLD.Net10.Extension.csproj" />
+  <Project Path="SLD.Net10.IService/SLD.Net10.IService.csproj" />
+  <Project Path="SLD.Net10.Model/SLD.Net10.Model.csproj" />
+  <Project Path="SLD.Net10.Repository/SLD.Net10.Repository.csproj" />
+  <Project Path="SLD.Net10.Service/SLD.Net10.Service.csproj" />
+  <Project Path="SLD.Net10/SLD.Net10.csproj" />
+</Solution>

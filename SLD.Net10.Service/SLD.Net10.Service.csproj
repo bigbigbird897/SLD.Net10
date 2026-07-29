@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SLD.Net10.Common\SLD.Net10.Common.csproj" />
+    <ProjectReference Include="..\SLD.Net10.IService\SLD.Net10.IService.csproj" />
+    <ProjectReference Include="..\SLD.Net10.Repository\SLD.Net10.Repository.csproj" />
+  </ItemGroup>
+
+</Project>
