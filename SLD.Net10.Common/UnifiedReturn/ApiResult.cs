@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SLD.Net10.Common.UnifiedReturn
+﻿namespace SLD.Net10.Common.UnifiedReturn
 {
     /// <summary>
     /// 工业自动化全局统一返回模型

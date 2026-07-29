@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using Serilog;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Serilog;
 using System.Windows;
 
 namespace SLD.Net10;

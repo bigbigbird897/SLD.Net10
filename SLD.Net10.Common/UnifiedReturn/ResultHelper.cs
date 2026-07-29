@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SLD.Net10.Common.UnifiedReturn
+﻿namespace SLD.Net10.Common.UnifiedReturn
 {
+    /// <summary>
+    /// 参考文档：
+    /// 1 ASP.NET Core 工业自动化项目统一JSON规范方案
+    /// </summary>
     public static class ResultHelper
     {
         // 成功无数据

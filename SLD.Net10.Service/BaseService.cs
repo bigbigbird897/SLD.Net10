@@ -1,7 +1,6 @@
-﻿using SLD.Net10.IService;
+﻿using AutoMapper;
+using SLD.Net10.IService;
 using SLD.Net10.Repository;
-
-using AutoMapper;
 
 namespace SLD.Net10.Service
 {

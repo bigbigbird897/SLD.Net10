@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SLD.Net10.Extension.ComponentConfigDetail
 {
@@ -20,7 +17,7 @@ namespace SLD.Net10.Extension.ComponentConfigDetail
         /// <summary>
         /// 项目根目录路径
         /// </summary>
-        static string? contentPath { get; set; }
+        private static string? contentPath { get; set; }
 
         /// <summary>
         /// 构造函数1：通过项目根路径手动加载appsettings.json配置文件

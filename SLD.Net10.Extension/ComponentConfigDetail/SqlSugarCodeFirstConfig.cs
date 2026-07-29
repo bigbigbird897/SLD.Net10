@@ -1,6 +1,5 @@
 ﻿using SLD.Net10.Model;
 using SqlSugar;
-using System;
 
 namespace SLD.Net10.Extension.ComponentConfigDetail
 {

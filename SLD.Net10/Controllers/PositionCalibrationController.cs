@@ -8,7 +8,7 @@ namespace SLD.Net10.Controllers
     [ApiController]
     [Route("[controller]")]
     [ApiExplorerSettings(GroupName = "点位标定")]
-    public class PositionCalibrationController:ControllerBase
+    public class PositionCalibrationController : ControllerBase
     {
     }
 }

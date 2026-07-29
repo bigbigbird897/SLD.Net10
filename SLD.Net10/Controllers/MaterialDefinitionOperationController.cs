@@ -8,7 +8,7 @@ namespace SLD.Net10.Controllers
     [ApiController]
     [Route("[controller]")]
     [ApiExplorerSettings(GroupName = "物料定义和操作")]
-    public class MaterialDefinitionOperationController: ControllerBase
+    public class MaterialDefinitionOperationController : ControllerBase
     {
     }
 }

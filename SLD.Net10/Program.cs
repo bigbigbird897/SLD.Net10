@@ -4,7 +4,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Serilog;
 using Serilog.Events;
@@ -13,8 +12,6 @@ using SLD.Net10.ComponentConfigDetail;
 using SLD.Net10.Extension.ComponentConfigDetail;
 using SqlSugar;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Serilog.Expressions;
-
 
 namespace SLD.Net10
 {
@@ -29,6 +26,7 @@ namespace SLD.Net10
             var builder = WebApplication.CreateBuilder(args);
 
             #region 一、Autofac依赖注入容器配置
+
             builder.Host
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>(containerBuilder =>
@@ -38,9 +36,11 @@ namespace SLD.Net10
                 });
 
             builder.Services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>());
-            #endregion
+
+            #endregion 一、Autofac依赖注入容器配置
 
             #region 二、基础框架服务注册
+
             builder.Services.AddControllers();
 
             builder.Services.AddSwaggerGen(options =>
@@ -52,31 +52,39 @@ namespace SLD.Net10
                 options.SwaggerDoc("点位标定", new OpenApiInfo { Title = "点位标定接口", Version = "v1" });
 
                 options.DocInclusionPredicate((docName, apiDesc) =>
-                {
-                    if (!apiDesc.TryGetMethodInfo(out var method)) return false;
-                    var groupName = method.DeclaringType.GetCustomAttributes(true)
-                        .OfType<ApiExplorerSettingsAttribute>()
-                        .FirstOrDefault()?.GroupName;
-                    return docName == groupName;
-                });
+                                {
+                                    if (!apiDesc.TryGetMethodInfo(out var method)) return false;
+                                    var groupName = method.DeclaringType.GetCustomAttributes(true)
+                                        .OfType<ApiExplorerSettingsAttribute>()
+                                        .FirstOrDefault()?.GroupName;
+                                    return docName == groupName;
+                                });
             });
-            #endregion
+
+            #endregion 二、基础框架服务注册
 
             #region 三、AutoMapper 对象映射工具注册
+
             builder.Services.AddSingleton<IMapper>(serviceProvider =>
             {
                 ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
                 var mapperConfig = AutoMapperConfig.RegisterMappings(loggerFactory);
                 return mapperConfig.CreateMapper();
             });
-            #endregion
+
+            #endregion 三、AutoMapper 对象映射工具注册
 
             #region 四、全局配置类注册
+
             builder.Services.AddSingleton(new AppSettingsConfig(builder.Configuration));
-            #endregion
 
+            #endregion 四、全局配置类注册
 
-
+            /*
+             * 参考文档：
+             * 1 https://www.cnblogs.com/TangQF/articles/18976094
+             * 2 Serilog 完整使用指南 + 日志等级统计方案（适配你现有.NET8/PostgreSQL+SqlSugar项目）
+             */
             Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
@@ -88,7 +96,7 @@ namespace SLD.Net10
         // 过滤掉来源为ISqlSugarClient的日志（SQL日志）
         .Filter.ByExcluding(Matching.WithProperty("SourceContext", "SqlSugar.ISqlSugarClient"))
         .WriteTo.Async(a => a.File(
-            path: "logs/all/log-.log",
+            path: "logs/all/general-log-.log",
             rollingInterval: RollingInterval.Day,
             retainedFileCountLimit: 30,
             outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}"
@@ -108,9 +116,8 @@ namespace SLD.Net10
 
             builder.Host.UseSerilog();
 
-
-
             #region 五、SqlSugar ORM框架注册（PostgreSQL数据库）
+
             string? connectionStr = builder.Configuration.GetConnectionString("Default");
 
             builder.Services.AddSingleton<ISqlSugarClient>(serviceProvider =>
@@ -148,11 +155,8 @@ namespace SLD.Net10
 
                 return db;
             });
-            #endregion
 
-
-
-
+            #endregion 五、SqlSugar ORM框架注册（PostgreSQL数据库）
 
             var app = builder.Build();
 
@@ -161,6 +165,7 @@ namespace SLD.Net10
             dbClient.InitCodeFirst();
 
             #region 八、请求管道中间件配置
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -186,7 +191,8 @@ namespace SLD.Net10
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
-            #endregion
+
+            #endregion 八、请求管道中间件配置
 
             // 返回构建完成的Host，外部可调用Run启动服务
             return app;

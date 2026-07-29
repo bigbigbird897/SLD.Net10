@@ -1,8 +1,5 @@
-﻿using Microsoft.Web.WebView2.Core;
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Forms; // WinForms控件
 
 namespace SLD.Net10
 {
@@ -10,10 +7,12 @@ namespace SLD.Net10
     {
         // Web服务监听地址，和appsettings.json的Urls保持一致
         private const string SwaggerUrl = "https://localhost:9666/swagger/index.html";
+
         //private const string SwaggerUrl = "https://localhost:9666/";
 
         // 托盘实例
         private NotifyIcon _trayIcon;
+
         // 托盘右键菜单
         private readonly ContextMenuStrip _trayMenu;
 
@@ -42,6 +41,7 @@ namespace SLD.Net10
         }
 
         #region 托盘初始化（修复ContextMenu报错，使用ContextMenuStrip）
+
         private void InitTrayIcon()
         {
             // 菜单条目
@@ -70,9 +70,11 @@ namespace SLD.Net10
             // 双击托盘图标恢复窗口
             _trayIcon.DoubleClick += TrayIcon_DoubleClick;
         }
-        #endregion
+
+        #endregion 托盘初始化（修复ContextMenu报错，使用ContextMenuStrip）
 
         #region 窗口最小化/关闭拦截
+
         private void Window_StateChanged(object sender, EventArgs e)
         {
             if (this.WindowState == WindowState.Minimized)
@@ -88,9 +90,11 @@ namespace SLD.Net10
             this.Hide();
             _trayIcon.ShowBalloonTip(1000, "提示", "程序已最小化至系统托盘", ToolTipIcon.Info);
         }
-        #endregion
+
+        #endregion 窗口最小化/关闭拦截
 
         #region 托盘事件
+
         private void TrayIcon_DoubleClick(object sender, EventArgs e)
         {
             RestoreWindow();
@@ -115,9 +119,11 @@ namespace SLD.Net10
             this.WindowState = WindowState.Normal;
             this.Activate();
         }
-        #endregion
+
+        #endregion 托盘事件
 
         #region 释放资源
+
         protected override void OnClosed(EventArgs e)
         {
             if (_trayIcon != null)
@@ -128,6 +134,7 @@ namespace SLD.Net10
             _trayMenu?.Dispose();
             base.OnClosed(e);
         }
-        #endregion
+
+        #endregion 释放资源
     }
 }

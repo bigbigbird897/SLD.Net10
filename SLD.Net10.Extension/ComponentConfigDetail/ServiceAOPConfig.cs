@@ -1,10 +1,7 @@
 ﻿using Castle.DynamicProxy;
 using Newtonsoft.Json;
 using SLD.Net10.Extension.Model;
-using System;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace SLD.Net10.Extension.ComponentConfigDetail
 {
@@ -57,6 +54,7 @@ namespace SLD.Net10.Extension.ComponentConfigDetail
                 if (IsAsyncMethod(invocation.Method))
                 {
                     #region 异步方法处理逻辑（Task / Task<T>）
+
                     // 无返回值异步方法 Task
                     if (invocation.Method.ReturnType == typeof(Task))
                     {
@@ -78,11 +76,13 @@ namespace SLD.Net10.Extension.ComponentConfigDetail
                             // 异常回调
                             ex => LogEx(ex, aopLog));
                     }
-                    #endregion
+
+                    #endregion 异步方法处理逻辑（Task / Task<T>）
                 }
                 else
                 {
                     #region 同步方法处理逻辑
+
                     string responseResultJson;
                     try
                     {
@@ -105,7 +105,8 @@ namespace SLD.Net10.Extension.ComponentConfigDetail
 
                     // 控制台打印完整AOP日志（生产环境可替换为Serilog写入文件/数据库）
                     //Console.WriteLine(JsonConvert.SerializeObject(aopLog));
-                    #endregion
+
+                    #endregion 同步方法处理逻辑
                 }
             }
             catch (Exception ex)

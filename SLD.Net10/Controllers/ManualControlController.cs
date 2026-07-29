@@ -8,7 +8,7 @@ namespace SLD.Net10.Controllers
     [ApiController]
     [Route("[controller]")]
     [ApiExplorerSettings(GroupName = "手动控制")]
-    public class ManualControlController:ControllerBase
+    public class ManualControlController : ControllerBase
     {
     }
 }
