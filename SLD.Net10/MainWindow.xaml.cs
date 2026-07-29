@@ -9,8 +9,8 @@ namespace SLD.Net10
     public partial class MainWindow : Window
     {
         // Web服务监听地址，和appsettings.json的Urls保持一致
-        //private const string SwaggerUrl = "https://localhost:9666/swagger/index.html";
-        private const string SwaggerUrl = "https://localhost:9666/";
+        private const string SwaggerUrl = "https://localhost:9666/swagger/index.html";
+        //private const string SwaggerUrl = "https://localhost:9666/";
 
         // 托盘实例
         private NotifyIcon _trayIcon;

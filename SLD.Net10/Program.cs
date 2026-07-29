@@ -8,10 +8,13 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Serilog;
 using Serilog.Events;
+using Serilog.Filters;
 using SLD.Net10.ComponentConfigDetail;
 using SLD.Net10.Extension.ComponentConfigDetail;
 using SqlSugar;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Serilog.Expressions;
+
 
 namespace SLD.Net10
 {
@@ -72,11 +75,49 @@ namespace SLD.Net10
             builder.Services.AddSingleton(new AppSettingsConfig(builder.Configuration));
             #endregion
 
+
+
+            Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+    .MinimumLevel.Override("SqlSugar", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    // 1) 全量日志：排除SqlSugar的SQL执行日志
+    .WriteTo.Logger(lc => lc
+        // 过滤掉来源为ISqlSugarClient的日志（SQL日志）
+        .Filter.ByExcluding(Matching.WithProperty("SourceContext", "SqlSugar.ISqlSugarClient"))
+        .WriteTo.Async(a => a.File(
+            path: "logs/all/log-.log",
+            rollingInterval: RollingInterval.Day,
+            retainedFileCountLimit: 30,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}"
+        ))
+    )
+    // 2) SqlSugar SQL专用日志：只收集ISqlSugarClient输出的日志
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(Matching.WithProperty("SourceContext", "SqlSugar.ISqlSugarClient"))
+        .WriteTo.Async(a => a.File(
+            path: "logs/sql/sql-log-.log",
+            rollingInterval: RollingInterval.Day,
+            retainedFileCountLimit: 30,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] SqlSugar SQL：{Message:lj} {Properties:j}{NewLine}{Exception}"
+        ))
+    )
+    .CreateLogger();
+
+            builder.Host.UseSerilog();
+
+
+
             #region 五、SqlSugar ORM框架注册（PostgreSQL数据库）
             string? connectionStr = builder.Configuration.GetConnectionString("Default");
 
-            builder.Services.AddSingleton<ISqlSugarClient>(sugar =>
+            builder.Services.AddSingleton<ISqlSugarClient>(serviceProvider =>
             {
+                // 从DI容器获取ILogger，指定日志源名称SqlSugar
+                var logger = serviceProvider.GetRequiredService<ILogger<ISqlSugarClient>>();
+
                 var db = new SqlSugarClient(new ConnectionConfig()
                 {
                     ConnectionString = connectionStr,
@@ -85,28 +126,33 @@ namespace SLD.Net10
                     InitKeyType = InitKeyType.Attribute
                 });
 
+                // SQL执行前拦截
                 db.Aop.OnLogExecuting = (sql, pars) =>
                 {
-                    //Console.WriteLine($"执行SQL：{sql}");
+                    // 拼接SQL参数
+                    var paramDic = new Dictionary<string, object>();
+                    foreach (var p in pars)
+                    {
+                        paramDic.Add(p.ParameterName, p.Value);
+                    }
+
+                    // 使用ILogger打印，自动带上SourceContext=SqlSugar
+                    logger.LogInformation("执行数据库SQL：{SqlContent}", sql, new { SqlParams = paramDic });
+                };
+
+                // SQL执行异常日志
+                db.Aop.OnError = (exp) =>
+                {
+                    logger.LogError(exp, "SQL执行异常");
                 };
 
                 return db;
             });
             #endregion
 
-            #region 六、Serilog 全局日志框架初始化
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .WriteTo.File(
-                    path: "logs/log-.txt",
-                    rollingInterval: RollingInterval.Day,
-                    retainedFileCountLimit: 30,
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
-                )
-                .CreateLogger();
 
-            builder.Host.UseSerilog();
-            #endregion
+
+
 
             var app = builder.Build();
 
