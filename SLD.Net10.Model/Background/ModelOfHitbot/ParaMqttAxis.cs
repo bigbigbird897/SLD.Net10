@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SLD.Net10.Model.Hitbot
+namespace SLD.Net10.Model.Background.ModelOfHitbot
 {
     public class ParaMqttAxis
     {

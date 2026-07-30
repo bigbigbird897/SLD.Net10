@@ -10,6 +10,13 @@ namespace SLD.Net10.Extension.ComponentConfig
     /// <summary>
     /// Autofac批量注册模块
     /// 统一注册仓储层、业务服务层，开启AOP拦截、属性自动注入
+    /// 备注：
+    /// 1. `ContainerBuilder`：**容器构建器**（用来注册所有服务，你代码里 `builder`）
+    /// 2. `IContainer`：** 构建完成的容器（根容器）**，调用 `builder.Build()` 生成
+    /// 3. `ILifetimeScope`：** 作用域（Scope）**，日常业务优先使用，不能直接用根容器 Resolve
+    /// 只有两种场景需要手动获取容器 / Scope：
+    /// 1. ** 后台任务、定时任务、非 http 请求线程**（没有自动 scope）
+    /// 2. ** 动态创建对象、工厂模式、运行时按需 Resolve 服务**
     /// </summary>
     public class AutofacModuleConfig : Autofac.Module
     {
@@ -31,9 +38,15 @@ namespace SLD.Net10.Extension.ComponentConfig
             var basePath = AppContext.BaseDirectory;
 
             // 拼接业务服务层dll物理路径
+            /*
+             * TODO:
+             * 1 这段 Autofac 模块改成**不依赖硬编码 dll 文件名**的扫描方式
+             */
             var servicesDllFile = Path.Combine(basePath, "SLD.Net10.Service.dll");
             // 拼接仓储层dll物理路径
             var repositoryDllFile = Path.Combine(basePath, "SLD.Net10.Repository.dll");
+            //
+            var modelDllFile = Path.Combine(basePath, "SLD.Net10.Model.dll");
 
             // 定义AOP拦截器集合（业务服务全局拦截）
             var aopTypes = new List<Type>() { typeof(ServiceAOPConfig) };
@@ -61,6 +74,10 @@ namespace SLD.Net10.Extension.ComponentConfig
             #region 批量扫描注册整个Service程序集所有业务服务
 
             // 加载Service层dll程序集
+            /*
+             * TODO：
+             * 1 如果你偶尔需要「根据实现类具体类型获取实例」，追加 `.AsSelf()`
+             */
             var assemblysServices = Assembly.LoadFrom(servicesDllFile);
             builder.RegisterAssemblyTypes(assemblysServices)
                    .AsImplementedInterfaces()               // 自动匹配并注册所有实现的接口
@@ -81,6 +98,20 @@ namespace SLD.Net10.Extension.ComponentConfig
                    .InstancePerDependency();          // 瞬时生命周期
 
             #endregion 批量扫描注册整个Repository程序集所有仓储类
+
+
+            
+
+
+            var assemblyModel = Assembly.LoadFrom(modelDllFile);
+            if (assemblyModel == null)
+            {
+                // dll没加载成功！
+            }
+            // 打印程序集内所有类型，看是否能找到User
+            var allTypes = assemblyModel.GetTypes();
+            bool hasUser = allTypes.Any(x => x.Name == "User");
+            builder .RegisterAssemblyTypes(assemblyModel).InstancePerDependency();
         }
     }
 }

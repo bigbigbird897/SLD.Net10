@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
-using SLD.Net10.Model.ModelOfManageUser;
+using SLD.Net10.Model.Business.ModelOfManageUser;
 
 namespace SLD.Net10.Extension.ComponentConfig
 {

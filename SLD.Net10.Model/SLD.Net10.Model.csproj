@@ -11,11 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ModelOfExperimentDefinOpera\" />
-    <Folder Include="ModelOfManualControl\" />
-    <Folder Include="ModelOfExperimentDataOpera\" />
-    <Folder Include="ModelOfMaterial\" />
-    <Folder Include="ModelOfPositionCalib\" />
+    <Folder Include="Business\ModelOfManualControl\" />
+    <Folder Include="Business\ModelOfExperimentDataOpera\" />
+    <Folder Include="Business\ModelOfMaterial\" />
+    <Folder Include="Business\ModelOfPositionCalib\" />
   </ItemGroup>
 
 </Project>

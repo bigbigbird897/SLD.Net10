@@ -1,4 +1,4 @@
-﻿namespace SLD.Net10.Model.ModelOfManageUser
+﻿namespace SLD.Net10.Model.Business.ModelOfManageUser
 {
     public class UserVo
     {

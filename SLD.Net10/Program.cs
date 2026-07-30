@@ -13,6 +13,8 @@ using Serilog.Events;
 using Serilog.Filters;
 using SLD.Net10.ComponentConfig;
 using SLD.Net10.Extension.ComponentConfig;
+using SLD.Net10.IService;
+using SLD.Net10.Service;
 using SqlSugar;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -211,6 +213,8 @@ namespace SLD.Net10
                 var logger = sp.GetRequiredService<ILogger<ModbusRtuWithTcpClient>>();
                 return new ModbusRtuWithTcpClient(logger, modbusDeviceList);
             });
+
+            builder.Services.AddSingleton<IExperimentRuntimePool, ExperimentRuntimePool>();
 
             var app = builder.Build();
 

@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 
-namespace SLD.Net10.Model.Hitbot
+namespace SLD.Net10.Model.Background.ModelOfHitbot
 {
     /// <summary>
     /// Hitbot 统一交互报文模型（非泛型，兼容旧JObject场景）
