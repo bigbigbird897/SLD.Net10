@@ -214,7 +214,7 @@ namespace SLD.Net10
                 return new ModbusRtuWithTcpClient(logger, modbusDeviceList);
             });
 
-            builder.Services.AddSingleton<IExperimentRuntimePool, ExperimentRuntimePool>();
+            //builder.Services.AddSingleton<IExperimentRuntimePool, ExperimentRuntimePool>();
 
             var app = builder.Build();
 

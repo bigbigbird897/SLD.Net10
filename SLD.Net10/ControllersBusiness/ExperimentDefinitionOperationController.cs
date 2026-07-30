@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Autofac;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SLD.Net10.Common.WebApiUnifiedReturn;
 using SLD.Net10.IService;
 using SLD.Net10.IService.Entity;
 using SLD.Net10.Model.Business.ModelOfExperimentDefinOpera;
+using SLD.Net10.Service;
 using SLD.Net10.Service.CommandCustomizeExecutor;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Windows.Forms.Design;
 
 [ApiController]
 [Route("[controller]/[action]")]
@@ -16,13 +19,20 @@ public class ExperimentDefinitionOperationController : ControllerBase
 {
     private readonly ILogger<ExperimentDefinitionOperationController> _logger;
     private readonly IExperimentRuntimePool _runtimePool;
+    private IExperimentManager _experimentManager;
+    private readonly ILifetimeScope _scope;
 
     public ExperimentDefinitionOperationController(
         ILogger<ExperimentDefinitionOperationController> logger,
-        IExperimentRuntimePool runtimePool)
+        IExperimentRuntimePool runtimePool,
+        IExperimentManager experimentManager,
+        ILifetimeScope scope
+    )
     {
         _logger = logger;
         _runtimePool = runtimePool;
+        _experimentManager = experimentManager;
+        _scope=scope;
     }
 
     #region 导出实验
@@ -41,14 +51,18 @@ public class ExperimentDefinitionOperationController : ControllerBase
                 HardwareParams = new JObject(
                     new JProperty("Temp", 25),
                     new JProperty("Speed", 500)
-                )
+                ),
             };
 
             string json = JsonConvert.SerializeObject(experimentModel, Formatting.Indented);
             byte[] fileBytes = System.Text.Encoding.UTF8.GetBytes(json);
             string fileName = $"实验_{experimentId}_{DateTime.Now:yyyyMMddHHmmss}.exp";
 
-            _logger.LogInformation("实验{ExperimentId}导出文件成功，文件名：{FileName}", experimentId, fileName);
+            _logger.LogInformation(
+                "实验{ExperimentId}导出文件成功，文件名：{FileName}",
+                experimentId,
+                fileName
+            );
             return File(fileBytes, "application/octet-stream", fileName);
         }
         catch (Exception ex)
@@ -87,9 +101,10 @@ public class ExperimentDefinitionOperationController : ControllerBase
             {
                 new StepACentrifugeTempExecutor(),
                 new StepBFridgeQueryExecutor(),
-                new StepCAxisMoveExecutor()
+                new StepCAxisMoveExecutor(),
             };
-            ExperimentManager manager = new ExperimentManager(executors);
+            //var manager = new ExperimentManager(executors);
+            await _experimentManager.DismantleExecutors(executors);
 
             // 构造方案（后续改为从experimentModel解析生成List<ExperimentCommand>）
             var scheme = new List<ExperimentCommand>
@@ -97,50 +112,73 @@ public class ExperimentDefinitionOperationController : ControllerBase
                 new ExperimentCommand
                 {
                     CommandName = "StepA_CentrifugeTemp",
-                    InputParams = new Dictionary<string, string>{{"TargetTemp","45"}}
+                    InputParams = new Dictionary<string, string> { { "TargetTemp", "45" } },
                 },
                 new ExperimentCommand
                 {
                     CommandName = "StepB_FridgeQuery",
-                    InputParams = new Dictionary<string, string>{{"Col","2"},{"Layer","3"}}
+                    InputParams = new Dictionary<string, string>
+                    {
+                        { "Col", "2" },
+                        { "Layer", "3" },
+                    },
                 },
                 new ExperimentCommand
                 {
                     CommandName = "StepC_AxisMove",
-                    InputParams = new Dictionary<string, string>{{"MovePosition","${BarCodePos}"}}
+                    InputParams = new Dictionary<string, string>
+                    {
+                        { "MovePosition", "${BarCodePos}" },
+                    },
                 },
                 new ExperimentCommand
                 {
                     CommandName = "StepC_AxisMove",
-                    InputParams = new Dictionary<string, string>{{"MovePosition","${BarCodePos}"}}
+                    InputParams = new Dictionary<string, string>
+                    {
+                        { "MovePosition", "${BarCodePos}" },
+                    },
                 },
                 new ExperimentCommand
                 {
                     CommandName = "StepC_AxisMove",
-                    InputParams = new Dictionary<string, string>{{"MovePosition","${BarCodePos}"}}
+                    InputParams = new Dictionary<string, string>
+                    {
+                        { "MovePosition", "${BarCodePos}" },
+                    },
                 },
                 new ExperimentCommand
                 {
                     CommandName = "StepC_AxisMove",
-                    InputParams = new Dictionary<string, string>{{"MovePosition","${BarCodePos}"}}
-                }
+                    InputParams = new Dictionary<string, string>
+                    {
+                        { "MovePosition", "${BarCodePos}" },
+                    },
+                },
             };
-            manager.LoadScheme(scheme);
+            _experimentManager.LoadScheme(scheme);
 
             // 存入全局运行池，使用实验Id关联
             long expId = experimentModel.ExperimentId;
-            _runtimePool.SetManager(expId, manager);
-
+            _runtimePool.SetManager(expId, _experimentManager);
+            _logger.LogInformation(
+                "加载实验成功，_runtimePool实例Hash=0x{Hash:X8}",
+                _runtimePool.GetHashCode().ToString()
+            );
             // 打印实例Hash（安全，manager不为null）
-            int instanceHash = RuntimeHelpers.GetHashCode(manager);
-            _logger.LogInformation("加载实验成功，ExperimentManager实例Hash=0x{Hash:X8}", instanceHash);
+            _logger.LogInformation(
+                "加载实验成功，ExperimentManager实例Hash=0x{Hash:X8}",
+                _experimentManager.GetHashCode().ToString()
+            );
 
-            return ResultHelper.Success<object>(new
-            {
-                FileName = file.FileName,
-                ExperimentId = expId,
-                Message = "实验文件加载成功，可执行启动/暂停操作"
-            });
+            return ResultHelper.Success<object>(
+                new
+                {
+                    FileName = file.FileName,
+                    ExperimentId = expId,
+                    Message = "实验文件加载成功，可执行启动/暂停操作",
+                }
+            );
         }
         catch (JsonException jsonEx)
         {
@@ -164,13 +202,21 @@ public class ExperimentDefinitionOperationController : ControllerBase
         {
             // 从池中查找实例
             var manager = _runtimePool.GetManager(experimentId);
+            _logger.LogInformation(
+                "加载实验成功，_runtimePool实例Hash=0x{Hash:X8}",
+                _runtimePool.GetHashCode().ToString()
+            );
             if (manager == null)
             {
-                return ResultHelper.ParamError($"实验{experimentId}尚未加载，请先上传.exp文件加载实验方案");
+                return ResultHelper.ParamError(
+                    $"实验{experimentId}尚未加载，请先上传.exp文件加载实验方案"
+                );
             }
 
-            int instanceHash = RuntimeHelpers.GetHashCode(manager);
-            _logger.LogInformation("找到实验管理器实例 Hash=0x{Hash:X8}", instanceHash);
+            _logger.LogInformation(
+                "找到实验管理器实例 Hash=0x{Hash:X8}",
+                manager.GetHashCode().ToString()
+            );
 
             // 后台运行
             _ = Task.Run(async () =>

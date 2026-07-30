@@ -77,6 +77,8 @@ namespace SLD.Net10.Extension.ComponentConfig
             /*
              * TODO：
              * 1 如果你偶尔需要「根据实现类具体类型获取实例」，追加 `.AsSelf()`
+             * 备注：
+             * 1 这条规则**只注册：类 → 它实现的接口**。
              */
             var assemblysServices = Assembly.LoadFrom(servicesDllFile);
             builder.RegisterAssemblyTypes(assemblysServices)
@@ -112,6 +114,13 @@ namespace SLD.Net10.Extension.ComponentConfig
             var allTypes = assemblyModel.GetTypes();
             bool hasUser = allTypes.Any(x => x.Name == "User");
             builder .RegisterAssemblyTypes(assemblyModel).InstancePerDependency();
+
+
+            // AutofacModuleConfig Load方法内
+            builder.RegisterType<ExperimentRuntimePool>()
+                   .As<IExperimentRuntimePool>()
+                   .SingleInstance(); // Autofac单例生命周期
+
         }
     }
 }

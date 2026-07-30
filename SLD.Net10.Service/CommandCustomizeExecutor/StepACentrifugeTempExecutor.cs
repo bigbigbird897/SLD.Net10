@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Serilog;
 using SLD.Net10.IService;
 using SLD.Net10.IService.Entity;
 using System;
@@ -14,22 +15,25 @@ namespace SLD.Net10.Service.CommandCustomizeExecutor
     /// </summary>
     public class StepACentrifugeTempExecutor : ICommandCustomizeExecutor
     {
-        private readonly ILogger<StepACentrifugeTempExecutor> _logger;
         public string MatchCommand => "StepA_CentrifugeTemp";
+
+        public StepACentrifugeTempExecutor()
+        {
+        }
 
         public async Task<StepExecuteResult> ExecuteAsync(Dictionary<string, object> resolvedParams, CancellationToken token)
         {
             var result = new StepExecuteResult { Success = true };
             int targetTemp = Convert.ToInt32(resolvedParams["TargetTemp"]);
 
-            _logger.LogInformation($"[StepA] 设置离心目标温度：{targetTemp} ℃");
+            Log.Logger.Information($"[StepA] 设置离心目标温度：{targetTemp} ℃");
             await Task.Delay(1500, token);
 
             // 模拟硬件返回实际温度，作为输出变量给后面步骤使用
             int actualTemp = targetTemp - 2;
             result.OutputVars["CentActualTemp"] = actualTemp;
             result.Message = $"离心完成，实际温度 {actualTemp}℃";
-            _logger.LogInformation(result.Message);
+            Log.Logger.Information(result.Message);
             return result;
         }
     }

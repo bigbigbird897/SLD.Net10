@@ -1,23 +1,31 @@
-﻿using Castle.Core.Logging;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using SLD.Net10.IService;
+using SLD.Net10.IService.Entity;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace SLD.Net10.IService.Entity
+namespace SLD.Net10.Service
 {
     /// <summary>
-    /// 实验管理器：原有暂停恢复终止全部保留，新增变量解析传递
+    /// 实验管理器实现
     /// </summary>
-    public class ExperimentManager
+    public class ExperimentManager : IExperimentManager
     {
-        private readonly ILogger<ExperimentManager> _logger;
-        private readonly RunContext _context = new RunContext();
-        private readonly Dictionary<string, ICommandCustomizeExecutor> _executorDict;
-        private List<ExperimentCommand> _commandList;
+        //属性注入
+        private readonly ILogger? _logger;
+        private readonly RunContext _context = new();
+        private Dictionary<string, ICommandCustomizeExecutor>? _executorDict;
+        private List<ExperimentCommand>? _commandList;
 
-        public ExperimentManager(IEnumerable<ICommandCustomizeExecutor> executors)
+        public ExperimentManager(ILogger<ExperimentManager> logger)
+        {
+            _logger= logger;
+        }
+
+        public async Task DismantleExecutors(IEnumerable<ICommandCustomizeExecutor> executors)
         {
             _executorDict = new Dictionary<string, ICommandCustomizeExecutor>();
             foreach (var exec in executors)
@@ -25,6 +33,7 @@ namespace SLD.Net10.IService.Entity
                 _executorDict[exec.MatchCommand] = exec;
             }
         }
+
 
         public RunStatus GetCurrentStatus() => _context.Status;
 
