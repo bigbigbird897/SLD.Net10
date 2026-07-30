@@ -18,8 +18,6 @@ namespace SLD.Net10.Service
         public async Task<List<TVo>> Query()
         {
             var entities = await _baseRepository.Query();
-            // 打印仓储实例哈希码，用于调试判断是否为同一个对象实例
-            //Console.WriteLine($"_baseRepository 实例HashCode ： {_baseRepository.GetHashCode()}");
             var llout = _mapper.Map<List<TVo>>(entities);
             return llout;
         }

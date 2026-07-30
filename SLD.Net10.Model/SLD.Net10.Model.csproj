@@ -10,4 +10,12 @@
     <ProjectReference Include="..\SLD.Net10.Common\SLD.Net10.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ModelOfExperimentDefinOpera\" />
+    <Folder Include="ModelOfManualControl\" />
+    <Folder Include="ModelOfExperimentDataOpera\" />
+    <Folder Include="ModelOfMaterial\" />
+    <Folder Include="ModelOfPositionCalib\" />
+  </ItemGroup>
+
 </Project>

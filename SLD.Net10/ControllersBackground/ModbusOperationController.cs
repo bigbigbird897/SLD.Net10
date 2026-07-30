@@ -1,6 +1,7 @@
 ﻿using ConnectionModbusRtuWithTcp;
 using Microsoft.AspNetCore.Mvc;
-using SLD.Net10.Common.UnifiedReturn;
+using SLD.Net10.Common.WebApiUnifiedReturn;
+using SLD.Net10.Common.WebApiUnifiedReturn;
 
 namespace SLD.Net10.BackgroundControllers
 {
@@ -20,7 +21,11 @@ namespace SLD.Net10.BackgroundControllers
         /// 读取保持寄存器
         /// </summary>
         [HttpPost]
-        public async Task<ApiResult<ushort[]>> ReadRegister(string deviceCode, ushort startAddr, ushort count)
+        public async Task<ApiResult<ushort[]>> ReadRegister(
+            string deviceCode,
+            ushort startAddr,
+            ushort count
+        )
         {
             var data = await _modbusClient.ReadHoldRegistersAsync(deviceCode, startAddr, count);
             return ResultHelper.Success(data);
@@ -30,7 +35,11 @@ namespace SLD.Net10.BackgroundControllers
         /// 写入单个寄存器
         /// </summary>
         [HttpPost]
-        public async Task<ApiResult<object>> WriteSingleRegister(string deviceCode, ushort addr, ushort value)
+        public async Task<ApiResult<object>> WriteSingleRegister(
+            string deviceCode,
+            ushort addr,
+            ushort value
+        )
         {
             await _modbusClient.WriteSingleRegisterAsync(deviceCode, addr, value);
             return ResultHelper.Success("写入完成");

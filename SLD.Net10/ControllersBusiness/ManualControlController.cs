@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace SLD.Net10.Controllers
+namespace SLD.Net10.ControllersBusiness
 {
     /// <summary>
     /// 手动控制
@@ -8,7 +8,5 @@ namespace SLD.Net10.Controllers
     [ApiController]
     [Route("[controller]/[action]")]
     [ApiExplorerSettings(GroupName = "手动控制")]
-    public class ManualControlController : ControllerBase
-    {
-    }
+    public class ManualControlController : ControllerBase { }
 }

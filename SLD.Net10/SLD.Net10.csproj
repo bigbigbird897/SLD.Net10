@@ -34,10 +34,12 @@
 	<!-- 配置ico文件自动复制到发布输出目录 -->
 
 	<ItemGroup>
-		<ProjectReference Include="..\ConnectionMqtt\ConnectionMqtt.csproj" />
-		<ProjectReference Include="..\ConnectModbusRtuWithTcp\ConnectionModbusRtuWithTcp.csproj" />
 		<ProjectReference Include="..\SLD.Net10.Common\SLD.Net10.Common.csproj" />
+		<ProjectReference Include="..\SLD.Net10.Communication\ConnectionMqtt\ConnectionMqtt.csproj" />
+		<ProjectReference Include="..\SLD.Net10.Communication\ConnectModbusRtuWithTcp\ConnectionModbusRtuWithTcp.csproj" />
 		<ProjectReference Include="..\SLD.Net10.Extension\SLD.Net10.Extension.csproj" />
+		<ProjectReference Include="..\SLD.Net10.IService\SLD.Net10.IService.csproj" />
+		<ProjectReference Include="..\SLD.Net10.Model\SLD.Net10.Model.csproj" />
 	</ItemGroup>
 
 	<!-- 确保 Image 目录下的图标文件复制到输出目录，供运行时托盘图标使用 -->

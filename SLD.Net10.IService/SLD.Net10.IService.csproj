@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SLD.Net10.Model\SLD.Net10.Model.csproj" />
+  </ItemGroup>
+
 </Project>
