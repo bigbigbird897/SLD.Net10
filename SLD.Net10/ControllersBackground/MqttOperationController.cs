@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SLD.Net10.Common.WebApiUnifiedReturn;
-using SLD.Net10.Common.WebApiUnifiedReturn;
 using SLD.Net10.Model.Hitbot;
 
 namespace SLD.Net10.BackgroundControllers
