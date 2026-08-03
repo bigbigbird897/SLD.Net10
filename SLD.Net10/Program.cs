@@ -115,7 +115,7 @@ namespace SLD.Net10
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
                 .MinimumLevel.Override("SqlSugar", LogEventLevel.Information)
-                .Enrich.FromLogContext()
+                //.Enrich.FromLogContext()
                 // 全量日志：排除SqlSugar的SQL执行日志
                 .WriteTo.Logger(lc =>
                     lc
