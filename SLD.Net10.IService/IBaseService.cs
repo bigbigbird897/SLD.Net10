@@ -2,6 +2,6 @@
 {
     public interface IBaseServices<TEntity, TVo> where TEntity : class
     {
-        Task<List<TVo>> Query();
+        Task<List<TVo>> QueryById(string id);
     }
 }

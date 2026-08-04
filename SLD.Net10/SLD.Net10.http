@@ -1,6 +1,7 @@
-@SLD.Net10_HostAddress = http://localhost:5059
+@SLD.Net10_HostAddress = http://localhost:9666
 
-GET {{SLD.Net10_HostAddress}}/weatherforecast/
+GET https://localhost:9666/ManageUser/Approve
 Accept: application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxIiwidW5pcXVlX25hbWUiOiJhZG1pbiIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc4NTgxMjQ3OCwiZXhwIjoxNzg1ODE2MDc4LCJpYXQiOjE3ODU4MTI0NzgsImlzcyI6IlNMRC5OZXQxMCIsImF1ZCI6ImNsaWVudC1hcHAifQ.nW73Qku3l-vJS0WXbcCgeUO-wXPB1MZDDv1ShKQIs1s
 
 ###

@@ -27,4 +27,7 @@ public static class ResultHelper
     // 系统内部错误
     public static ApiResult<object> ServerError(string msg = "服务器异常")
         => new ApiResult<object> { Code = 500, Msg = msg };
+    // 成功带数据
+    public static ApiResult<T> ServerError<T>(T data, string msg = "服务器异常")
+        => new ApiResult<T> { Code = 500, Msg = msg};
 }

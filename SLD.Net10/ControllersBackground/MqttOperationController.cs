@@ -2,7 +2,7 @@
 using SLD.Net10.Common.WebApiUnifiedReturn;
 using SLD.Net10.Model.Background.ModelOfHitbot;
 
-namespace SLD.Net10.BackgroundControllers
+namespace SLD.Net10.ControllersBackground
 {
     [ApiController]
     [Route("[controller]/[action]")]

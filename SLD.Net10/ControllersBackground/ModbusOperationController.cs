@@ -1,9 +1,8 @@
 ﻿using ConnectionModbusRtuWithTcp;
 using Microsoft.AspNetCore.Mvc;
 using SLD.Net10.Common.WebApiUnifiedReturn;
-using SLD.Net10.Common.WebApiUnifiedReturn;
 
-namespace SLD.Net10.BackgroundControllers
+namespace SLD.Net10.ControllersBackground
 {
     [ApiController]
     [Route("[controller]/[action]")]

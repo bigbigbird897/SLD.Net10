@@ -4,9 +4,11 @@ using AutoMapper;
 using ConnectionModbusRtuWithTcp;
 using ConnectionModbusRtuWithTcp.Entity;
 using ConnectionMqtt;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
 using Serilog.Events;
@@ -17,6 +19,8 @@ using SLD.Net10.IService;
 using SLD.Net10.Service;
 using SqlSugar;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Security.Claims;
+using System.Text;
 
 namespace SLD.Net10
 {
@@ -89,6 +93,36 @@ namespace SLD.Net10
                 );
                 // 注册自动Tag分组过滤器（核心）
                 options.OperationFilter<SwaggerTagGroupFilter>();
+                // 定义 JWT 授权方案
+                /*
+                 * Bearer 是 HTTP 认证方案（Authentication Scheme）名称
+规范全称：Bearer Token（RFC 6750 标准）
+                参考：
+                1 https://www.youtube.com/watch?v=sj9TLoyOvfw&t=1301s
+                就是swagger发送报文的时候，没有携带token
+                 */
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = """
+                    请输入 Token，格式：{你的 token}
+                    示例:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    """
+                    /*
+                     * """
+                    请输入 Token，格式：Bearer {你的 token}
+                    示例：Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    """
+                     */
+                });
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
+                });
             });
             #endregion 基础框架服务注册
 
@@ -215,8 +249,72 @@ namespace SLD.Net10
             });
 
             //builder.Services.AddSingleton<IExperimentRuntimePool, ExperimentRuntimePool>();
+            // 读取Jwt配置
+            var jwtSection = builder.Configuration.GetSection("Jwt");
+            string secretKey = jwtSection["SecretKey"]!;
+            byte[] keyBytes = Encoding.UTF8.GetBytes(secretKey);
+            // 注册认证服务
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        // 开启验证
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true, // 校验过期时间
+                        ValidateIssuerSigningKey = true,
 
+                        ValidIssuer = jwtSection["Issuer"],
+                        ValidAudience = jwtSection["Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+
+                        // 可选：允许服务器时间偏差（防止客户端时区误差）
+                        ClockSkew = TimeSpan.FromSeconds(30)
+                    };
+
+                    // JWT认证事件 + Serilog日志输出
+                    options.Events = new JwtBearerEvents
+                    {
+                        // 收到请求，读取Authorization头
+                        OnMessageReceived = context =>
+                        {
+                            context.Request.Headers.TryGetValue("Authorization", out var authHeader);
+                            Log.Information("[JWT]收到请求 Authorization={AuthHeader}", authHeader);
+                            return Task.CompletedTask;
+                        },
+
+                        // Token校验失败（签名错误、iss/aud不匹配、过期等）
+                        OnAuthenticationFailed = context =>
+                        {
+                            Log.Error(context.Exception, "[JWT]Token校验失败");
+                            return Task.CompletedTask;
+                        },
+
+                        // Token校验成功，可以拿到用户信息
+                        OnTokenValidated = context =>
+                        {
+                            var userId = context.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+                            var userName = context.Principal.FindFirstValue(ClaimTypes.Name);
+                            Log.Information("[JWT]认证成功，UserId={UserId},UserName={UserName}", userId, userName);
+                            return Task.CompletedTask;
+                        },
+
+                        // 需要返回401 Unauthorized时触发
+                        OnChallenge = context =>
+                        {
+                            Log.Warning("[JWT]鉴权质询，即将返回401，Error={Error},Desc={Desc}", context.Error, context.ErrorDescription);
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
+
+            builder.Services.AddScoped<JwtHelper>();
             var app = builder.Build();
+
+            // 顺序很重要！先认证，再授权
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             // CodeFirst自动建库建表
             var dbClient = app.Services.GetRequiredService<ISqlSugarClient>();
@@ -252,7 +350,6 @@ namespace SLD.Net10
             // SPA路由回退：未匹配的请求返回index.html，交给前端路由处理
             app.MapFallbackToFile("index.html");
             app.UseHttpsRedirection();
-            app.UseAuthorization();
             app.MapControllers();
             #endregion 请求管道中间件配置
 

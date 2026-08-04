@@ -2,14 +2,7 @@
 {
     public class UserVo
     {
-        /// <summary>
-        /// 用户名，唯一，非空，长度50
-        /// </summary>
-        public string UserName { get; set; }
-
-        /// <summary>
-        /// 年龄，允许为空
-        /// </summary>
-        public int? Age { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
 }

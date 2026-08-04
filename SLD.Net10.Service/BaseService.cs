@@ -15,7 +15,7 @@ namespace SLD.Net10.Service
             _baseRepository = baseRepository;
         }
 
-        public async Task<List<TVo>> Query()
+        public async Task<List<TVo>> Queryable()
         {
             var entities = await _baseRepository.Query();
             var llout = _mapper.Map<List<TVo>>(entities);
