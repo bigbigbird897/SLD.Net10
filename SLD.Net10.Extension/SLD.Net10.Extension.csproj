@@ -7,7 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SLD.Net10.Common\SLD.Net10.Common.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SLD.Net10.Model\SLD.Net10.Model.csproj" />
     <ProjectReference Include="..\SLD.Net10.Repository\SLD.Net10.Repository.csproj" />
     <ProjectReference Include="..\SLD.Net10.Service\SLD.Net10.Service.csproj" />

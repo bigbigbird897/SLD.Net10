@@ -1,5 +1,5 @@
-﻿using SLD.Net10.Model;
-using SLD.Net10.Model.Business.ModelOfManageUser;
+﻿
+using SLD.Net10.Model.Background.ModelOfManageUser;
 using SqlSugar;
 
 namespace SLD.Net10.Extension.ComponentConfig

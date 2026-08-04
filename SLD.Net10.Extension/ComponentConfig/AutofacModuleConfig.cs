@@ -59,6 +59,10 @@ namespace SLD.Net10.Extension.ComponentConfig
                    .As(typeof(IBaseRepository<>))        // 实现接口绑定
                    .InstancePerDependency();               // 生命周期：瞬时，每次获取创建全新实例
 
+            builder.RegisterGeneric(typeof(Repository<>))
+                   .As(typeof(IRepository<>))        // 实现接口绑定
+                   .InstancePerDependency();               // 生命周期：瞬时，每次获取创建全新实例
+
             #endregion 注册通用基础仓储泛型类 BaseRepository<T>
 
             #region 注册通用基础业务泛型类 BaseServices<,>
@@ -93,11 +97,11 @@ namespace SLD.Net10.Extension.ComponentConfig
             #region 批量扫描注册整个Repository程序集所有仓储类
 
             // 加载Repository仓储层dll程序集
-            var assemblysRepository = Assembly.LoadFrom(repositoryDllFile);
-            builder.RegisterAssemblyTypes(assemblysRepository)
-                   .AsImplementedInterfaces()       // 绑定对应仓储接口
-                   .PropertiesAutowired()             // 开启属性注入
-                   .InstancePerDependency();          // 瞬时生命周期
+            //var assemblysRepository = Assembly.LoadFrom(repositoryDllFile);
+            //builder.RegisterAssemblyTypes(assemblysRepository)
+            //       .AsImplementedInterfaces()       // 绑定对应仓储接口
+            //       .PropertiesAutowired()             // 开启属性注入
+            //       .InstancePerDependency();          // 瞬时生命周期
 
             #endregion 批量扫描注册整个Repository程序集所有仓储类
 

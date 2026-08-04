@@ -3,7 +3,6 @@
     <Project Path="SLD.Net10.Communication/ConnectionMqtt/ConnectionMqtt.csproj" />
     <Project Path="SLD.Net10.Communication/ConnectModbusRtuWithTcp/ConnectionModbusRtuWithTcp.csproj" />
   </Folder>
-  <Project Path="SLD.Net10.Common/SLD.Net10.Common.csproj" />
   <Project Path="SLD.Net10.Extension/SLD.Net10.Extension.csproj" />
   <Project Path="SLD.Net10.IService/SLD.Net10.IService.csproj" />
   <Project Path="SLD.Net10.Model/SLD.Net10.Model.csproj" />

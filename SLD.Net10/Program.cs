@@ -16,6 +16,7 @@ using Serilog.Filters;
 using SLD.Net10.ComponentConfig;
 using SLD.Net10.Extension.ComponentConfig;
 using SLD.Net10.IService;
+using SLD.Net10.Repository;
 using SLD.Net10.Service;
 using SqlSugar;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -310,6 +311,10 @@ namespace SLD.Net10
                 });
 
             builder.Services.AddScoped<JwtHelper>();
+            //注入仓储
+            builder.Services.AddScoped(typeof(Repository<>));
+
+
             var app = builder.Build();
 
             // 顺序很重要！先认证，再授权

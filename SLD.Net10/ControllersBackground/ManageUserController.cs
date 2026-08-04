@@ -1,83 +1,89 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using SLD.Net10.Common;
 using SLD.Net10.Common.WebApiUnifiedReturn;
-using SqlSugar;
 using SLD.Net10.Model.Background.ModelOfManageUser;
-using SLD.Net10.IService;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using SLD.Net10.Repository;
+using SqlSugar;
 
 namespace SLD.Net10.ControllersBackground
 {
     [ApiController]
     [Route("[controller]/[action]")]
     [ApiExplorerSettings(GroupName = "其它后台功能")]
-    [Authorize] // 需要JWT登录访问
+    //[Authorize] // 需要JWT登录访问时打开
     public class ManageUserController : ControllerBase
     {
-        private readonly IBaseServices<User,UserVo> _baseService;
+        private readonly IRepository<User> _repository;
+        private readonly IMapper _mapper;
 
-        public ManageUserController(IBaseServices<User, UserVo> baseService)
+        public ManageUserController(IRepository<User> repository, IMapper mapper)
         {
-            _baseService = baseService;
-        }
-
-        [HttpGet]
-        public async Task<ApiResult<object>> TestJwtFunc()
-        {
-            return ResultHelper.Success("测试用户认证功能Jwt");
+            _repository = repository;
+            _mapper = mapper;
         }
 
         /// <summary>
         /// 用户分页列表
         /// </summary>
         //[HttpGet]
-        //public async Task<ApiResult<PageResult<User>>> GetUserPage([FromQuery] UserVo query)
+        //public async Task<ApiResult<PageResult<UserVo>>> GetUserPage([FromQuery] UserQueryDto query)
         //{
-        //    var q = _baseService.Queryable<User>();
+        //    var q = _repository.Context.Queryable<User>();
         //    if (!string.IsNullOrEmpty(query.Username))
         //    {
         //        q = q.Where(it => it.Username.Contains(query.Username));
         //    }
 
         //    var page = await q.ToPageAsync(query.PageIndex, query.PageSize);
-        //    return ResultHelper.Success(page);
+        //    var pageVo = _mapper.Map<PageResult<UserVo>>(page);
+        //    return ResultHelper.Success(pageVo);
         //}
 
         /// <summary>
         /// 根据ID查询单条用户
         /// </summary>
         [HttpGet]
-        public async Task<ApiResult<User?>> GetUserById(long id)
+        public async Task<ApiResult<UserVo?>> GetUserById(string id)
         {
-            var model = await _baseService.Queryable<User>().FirstAsync(it => it.Id == id);
-            return ResultHelper.Success(model);
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return ResultHelper.ServerError<UserVo?>(null,"Id不能为空");
+            }
+            var model = await _repository.Context.Queryable<User>()
+                .Where(it => it.Id == id)
+                .FirstAsync();
+            var vo = model == null ? null : _mapper.Map<UserVo>(model);
+            return ResultHelper.Success(vo);
         }
 
         /// <summary>
         /// 新增用户
         /// </summary>
         [HttpPost]
-        public async Task<ApiResult<bool>> AddUser([FromBody] UserEditDto dto)
+        public async Task<ApiResult<bool>> AddUser(string username,string password)
         {
             // 校验用户名是否重复
-            var exist = await _baseService.Queryable<User>().AnyAsync(it => it.Username == dto.Username);
+            var exist = await _repository.Context.Queryable<User>()
+                .AnyAsync(it => it.Username == username);
             if (exist)
             {
-                return ResultHelper.ServerError<bool>("用户名已存在");
+                return ResultHelper.ServerError<bool>(false,"用户名已存在");
             }
 
-            if (string.IsNullOrWhiteSpace(dto.Password))
+            if (string.IsNullOrWhiteSpace(password))
             {
-                return ResultHelper.ServerError<bool>("新增用户密码不能为空");
+                return ResultHelper.ServerError<bool>(false,"新增用户密码不能为空");
             }
 
             var user = new User
             {
-                Username = dto.Username,
-                // 建议加密：Password = MD5Helper.Encrypt(dto.Password)
-                Password = dto.Password
+                Id = StringHelper.GetDateTimeWithGuid(),
+                Username = username,
+                //正式环境建议密码加密
+                Password = password
             };
-            await _baseService.InsertAsync(user);
+            await _repository.InsertAsync(user);
             return ResultHelper.Success(true, "新增成功");
         }
 
@@ -85,25 +91,26 @@ namespace SLD.Net10.ControllersBackground
         /// 编辑用户（不修改密码时Password不传）
         /// </summary>
         [HttpPost]
-        public async Task<ApiResult<bool>> EditUser([FromBody] UserEditDto dto)
+        public async Task<ApiResult<bool>> EditUser([FromBody] UserVo dto)
         {
-            if (!dto.Id.HasValue || dto.Id <= 0)
+            if (string.IsNullOrWhiteSpace(dto.Id))
             {
-                return ResultHelper.ServerError<bool>("用户Id不能为空");
+                return ResultHelper.ServerError<bool>(false,"用户Id不能为空");
             }
 
             // 排除自身，校验重名
-            var exist = await _baseService.Queryable<User>()
-                .AnyAsync(it => it.Username == dto.Username && it.Id != dto.Id.Value);
+            var exist = await _repository.Context.Queryable<User>()
+                .AnyAsync(it => it.Username == dto.Username && it.Id != dto.Id);
             if (exist)
             {
-                return ResultHelper.ServerError<bool>("用户名已存在");
+                return ResultHelper.ServerError<bool>(false, "用户名已存在");
             }
 
-            var user = await _baseService.Queryable<User>().FirstAsync(it => it.Id == dto.Id.Value);
+            var user = await _repository.Context.Queryable<User>()
+                .FirstAsync(it => it.Id == dto.Id);
             if (user == null)
             {
-                return ResultHelper.ServerError<bool>("用户不存在");
+                return ResultHelper.ServerError<bool>(false, "用户不存在");
             }
 
             user.Username = dto.Username;
@@ -111,10 +118,10 @@ namespace SLD.Net10.ControllersBackground
             if (!string.IsNullOrWhiteSpace(dto.Password))
             {
                 user.Password = dto.Password;
-                // 加密版本：user.Password = MD5Helper.Encrypt(dto.Password);
+                //user.Password = MD5Helper.Encrypt(dto.Password);
             }
 
-            await _baseService.UpdateAsync(user);
+            await _repository.UpdateAsync(user);
             return ResultHelper.Success(true, "编辑成功");
         }
 
@@ -122,17 +129,20 @@ namespace SLD.Net10.ControllersBackground
         /// 删除用户
         /// </summary>
         [HttpPost]
-        public async Task<ApiResult<bool>> DeleteUser(long id)
+        public async Task<ApiResult<bool>> DeleteUser(string id)
         {
-            if (id <= 0)
-                return ResultHelper.ServerError<bool>("id无效");
+            if (string.IsNullOrWhiteSpace(id))
+                return ResultHelper.ServerError<bool>(false, "id不能为空");
 
-            // 可增加逻辑：禁止删除超级管理员admin
-            var user = await _baseService.Queryable<User>().FirstAsync(it => it.Id == id);
+            var user = await _repository.Context.Queryable<User>().FirstAsync(it => it.Id == id);
             if (user == null)
-                return ResultHelper.ServerError<bool>("用户不存在");
+                return ResultHelper.ServerError<bool>(false, "用户不存在");
 
-            await _baseService.DeleteAsync<User>(id);
+            //可选限制：禁止删除admin账号
+            //if(user.Username == "admin")
+            //    return ResultHelper.ServerError<bool>("超级管理员禁止删除");
+
+            var result=_repository.Context.Deleteable<User>(new User { Id=id}).ExecuteCommand();
             return ResultHelper.Success(true, "删除成功");
         }
 
@@ -140,20 +150,20 @@ namespace SLD.Net10.ControllersBackground
         /// 用户修改密码
         /// </summary>
         [HttpPost]
-        public async Task<ApiResult<bool>> ChangePassword(long userId, string oldPwd, string newPwd)
+        public async Task<ApiResult<bool>> ChangePassword(string userId, string oldPwd, string newPwd)
         {
-            var user = await _baseService.Queryable<User>().FirstAsync(it => it.Id == userId);
+            var user = await _repository.Context.Queryable<User>().FirstAsync(it => it.Id == userId);
             if (user == null)
-                return ResultHelper.ServerError<bool>("用户不存在");
+                return ResultHelper.ServerError<bool>(false,"用户不存在");
 
             if (user.Password != oldPwd)
             {
-                return ResultHelper.ServerError<bool>("原密码不正确");
+                return ResultHelper.ServerError<bool>(false, "原密码不正确");
             }
 
             user.Password = newPwd;
-            // user.Password = MD5Helper.Encrypt(newPwd);
-            await _baseService.UpdateAsync(user);
+            //user.Password = MD5Helper.Encrypt(newPwd);
+            await _repository.UpdateAsync(user);
             return ResultHelper.Success(true, "密码修改成功");
         }
     }

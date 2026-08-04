@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SLD.Net10.IService;
+using SLD.Net10.Model.Background.ModelOfManageUser;
 using SLD.Net10.Repository;
 
 namespace SLD.Net10.Service
@@ -7,19 +8,47 @@ namespace SLD.Net10.Service
     public class BaseServices<TEntity, TVo> : IBaseServices<TEntity, TVo> where TEntity : class, new()
     {
         private readonly IMapper _mapper;
-        private readonly IBaseRepository<TEntity> _baseRepository;
+        private readonly IRepository<User> _repository;
 
-        public BaseServices(IMapper mapper, IBaseRepository<TEntity> baseRepository)
+        public BaseServices(IMapper mapper, IRepository<User> repository)
         {
             _mapper = mapper;
-            _baseRepository = baseRepository;
+            _repository = repository;
         }
 
-        public async Task<List<TVo>> Queryable()
+        public Task<int> DeleteAsync(string name)
         {
-            var entities = await _baseRepository.Query();
-            var llout = _mapper.Map<List<TVo>>(entities);
-            return llout;
+            throw new NotImplementedException();
+        }
+
+        public Task<int> InsertAsync(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> UpdateAsync(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TVo> QueryableByEntityAsync(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TVo> QueryByNameAsync(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<TVo>> IBaseServices<TEntity, TVo>.QueryAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<TVo> IBaseServices<TEntity, TVo>.QueryByIdAsync(string id)
+        {
+            throw new NotImplementedException(); ;
         }
     }
 }

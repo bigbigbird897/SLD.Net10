@@ -23,7 +23,6 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
 	</ItemGroup>
 
@@ -35,7 +34,6 @@
 	<!-- 配置ico文件自动复制到发布输出目录 -->
 
 	<ItemGroup>
-		<ProjectReference Include="..\SLD.Net10.Common\SLD.Net10.Common.csproj" />
 		<ProjectReference Include="..\SLD.Net10.Communication\ConnectionMqtt\ConnectionMqtt.csproj" />
 		<ProjectReference Include="..\SLD.Net10.Communication\ConnectModbusRtuWithTcp\ConnectionModbusRtuWithTcp.csproj" />
 		<ProjectReference Include="..\SLD.Net10.Extension\SLD.Net10.Extension.csproj" />
