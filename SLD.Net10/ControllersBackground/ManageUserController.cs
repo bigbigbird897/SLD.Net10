@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SLD.Net10.Common;
+using SLD.Net10.Common.FunctionHelper;
 using SLD.Net10.Common.WebApiUnifiedReturn;
-using SLD.Net10.Model.Background.ModelOfManageUser;
-using SLD.Net10.Model.Background.ModelOfManageUser.Entity;
+using SLD.Net10.Model.ControllerModuleEntity.AppSetting;
+using SLD.Net10.Model.ControllerModuleEntity.Background.ModelOfManageUser.DbEntity;
 using SLD.Net10.Repository;
 using SqlSugar;
 
@@ -106,7 +106,7 @@ namespace SLD.Net10.ControllersBackground
 
             var user = new User
             {
-                Id = StringHelper.GetDateTimeWithGuid(),
+                Id = GenerateGuidStringHelper.GetDateTimeWithGuid(),
                 Username = userVo.Username,
                 //正式环境建议密码加密
                 Password = userVo.Password,

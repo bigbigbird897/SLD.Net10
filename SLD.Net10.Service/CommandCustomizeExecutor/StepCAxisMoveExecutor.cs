@@ -26,7 +26,7 @@ namespace SLD.Net10.Service.CommandCustomizeExecutor
             double pos = Convert.ToDouble(resolvedParams["MovePosition"]);
 
             Log.Logger.Information($"[StepC] 轴移动到位置 {pos}");
-            await Task.Delay(2000, token);
+            await Task.Delay(1000, token);
 
             result.OutputVars["AxisFinalPos"] = pos;
             result.Message = "轴运动完成";

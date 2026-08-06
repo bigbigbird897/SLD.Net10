@@ -7,10 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Business\ModelOfManualControl\" />
-    <Folder Include="Business\ModelOfExperimentDataOpera\" />
-    <Folder Include="Business\ModelOfMaterial\" />
-    <Folder Include="Business\ModelOfPositionCalib\" />
+    <Folder Include="ControllerModuleEntity\Business\ModelOfManualControl\" />
+    <Folder Include="ControllerModuleEntity\Business\ModelOfExperimentDataOpera\" />
+    <Folder Include="ControllerModuleEntity\Business\ModelOfMaterial\" />
+    <Folder Include="ControllerModuleEntity\Business\ModelOfPositionCalib\" />
+    <Folder Include="RepositoryModuleEntity\" />
   </ItemGroup>
 
   <ItemGroup>

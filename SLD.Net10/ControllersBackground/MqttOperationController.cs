@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SLD.Net10.Common.WebApiUnifiedReturn;
-using SLD.Net10.Model.Background.ModelOfHitbot;
+using SLD.Net10.Model.ControllerModuleEntity.Background.ModelOfHitbot;
 
 namespace SLD.Net10.ControllersBackground
 {

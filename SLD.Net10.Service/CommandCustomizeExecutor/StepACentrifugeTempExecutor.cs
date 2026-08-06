@@ -24,10 +24,11 @@ namespace SLD.Net10.Service.CommandCustomizeExecutor
         public async Task<StepExecuteResult> ExecuteAsync(Dictionary<string, object> resolvedParams, CancellationToken token)
         {
             var result = new StepExecuteResult { Success = true };
-            int targetTemp = Convert.ToInt32(resolvedParams["TargetTemp"]);
+            //int targetTemp = Convert.ToInt32(resolvedParams["TargetTemp"]);
+            int targetTemp = 5;
 
             Log.Logger.Information($"[StepA] 设置离心目标温度：{targetTemp} ℃");
-            await Task.Delay(1500, token);
+            await Task.Delay(1000, token);
 
             // 模拟硬件返回实际温度，作为输出变量给后面步骤使用
             int actualTemp = targetTemp - 2;

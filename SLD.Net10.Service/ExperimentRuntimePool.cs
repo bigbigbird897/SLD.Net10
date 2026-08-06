@@ -18,7 +18,6 @@ namespace SLD.Net10.Service
             return mgr;
         }
 
-        // 方法修改
         public void SetManager(string experimentId, IExperimentManager manager)
         {
             _pool[experimentId] = manager;

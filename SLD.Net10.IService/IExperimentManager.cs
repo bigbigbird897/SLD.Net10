@@ -13,7 +13,6 @@ namespace SLD.Net10.IService
 
         Task DismantleExecutors(IEnumerable<ICommandCustomizeExecutor> executors);
 
-        /// <summary>加载一套实验命令方案</summary>
         void LoadScheme(List<ExperimentCommand> commands);
 
         Task RunAsync();

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.ApplicationServices;
 using SLD.Net10.Common.WebApiUnifiedReturn;
-using SLD.Net10.Extension.ComponentConfig;
-using SLD.Net10.Model.Background.ModelOfManageUser;
-using SLD.Net10.Model.Background.ModelOfManageUser.Entity;
+using SLD.Net10.Extension.FrameHelper;
+using SLD.Net10.Model.ControllerModuleEntity.AppSetting;
+using SLD.Net10.Model.ControllerModuleEntity.Background.ModelOfManageUser.DbEntity;
 using SLD.Net10.Repository;
 using System.Security.Permissions;
 
@@ -15,9 +15,9 @@ namespace SLD.Net10.ControllersBackground
     public class AuthController : ControllerBase
     {
         private readonly JwtHelper _jwtHelper;
-        private readonly IRepository<Model.Background.ModelOfManageUser.User> _repository;
+        private readonly IRepository<Model.ControllerModuleEntity.Background.ModelOfManageUser.DbEntity.User> _repository;
         private readonly IConfiguration _configuration;
-        public AuthController(JwtHelper jwtHelper, IRepository<Model.Background.ModelOfManageUser.User> repository, IConfiguration configuration)
+        public AuthController(JwtHelper jwtHelper, IRepository<Model.ControllerModuleEntity.Background.ModelOfManageUser.DbEntity.User> repository, IConfiguration configuration)
         {
             _jwtHelper = jwtHelper;
             _repository = repository;
@@ -29,11 +29,11 @@ namespace SLD.Net10.ControllersBackground
         {
             var userSecurityOption = _configuration.GetSection("UserSecurityOption").Get<UserSecurityOption>() ?? new();
             // 1. 校验账号密码（模拟数据库验证）
-            var result = await _repository.Context.Queryable<Model.Background.ModelOfManageUser.User>().AnyAsync(it => it.Username == dto.Username && it.Password == dto.Password);
+            var result = await _repository.Context.Queryable<Model.ControllerModuleEntity.Background.ModelOfManageUser.DbEntity.User>().AnyAsync(it => it.Username == dto.Username && it.Password == dto.Password);
             if (result)
             {
                 
-                var userInfo = await _repository.Context.Queryable<Model.Background.ModelOfManageUser.User>().Where(it => it.Username == dto.Username).FirstAsync();
+                var userInfo = await _repository.Context.Queryable<Model.ControllerModuleEntity.Background.ModelOfManageUser.DbEntity.User>().Where(it => it.Username == dto.Username).FirstAsync();
                 
                 #region 检查账户输入密码错误是否已经超过5次
                 if (userInfo.PasswordErrorCount > userSecurityOption.MaxPasswordErrorCount|| (!userSecurityOption.EnableLoginFailLock))
@@ -60,11 +60,11 @@ namespace SLD.Net10.ControllersBackground
             else
             {
                 //如果数据库查询没有找到，但是不确定是用户名错误，还是密码错误
-                var resultUserName = await _repository.Context.Queryable<Model.Background.ModelOfManageUser.User>().AnyAsync(it => it.Username == dto.Username);
+                var resultUserName = await _repository.Context.Queryable<Model.ControllerModuleEntity.Background.ModelOfManageUser.DbEntity.User>().AnyAsync(it => it.Username == dto.Username);
                 //如果找到这个用户名，那就是密码错误
                 if (resultUserName)
                 {
-                    var userInfo = await _repository.Context.Queryable<Model.Background.ModelOfManageUser.User>().Where(it=>it.Username==dto.Username).FirstAsync();
+                    var userInfo = await _repository.Context.Queryable<Model.ControllerModuleEntity.Background.ModelOfManageUser.DbEntity.User>().Where(it=>it.Username==dto.Username).FirstAsync();
                     if (userInfo.PasswordErrorCount> userSecurityOption.MaxPasswordErrorCount)
                     {
                         return ResultHelper.ServerError<string>("账户已锁定，请稍后重试或联系管理员");
@@ -74,7 +74,7 @@ namespace SLD.Net10.ControllersBackground
                     {
                         userInfo.IsLocked = true;
                     }
-                    _repository.Context.Updateable<Model.Background.ModelOfManageUser.User>(userInfo).ExecuteCommand();
+                    _repository.Context.Updateable<Model.ControllerModuleEntity.Background.ModelOfManageUser.DbEntity.User>(userInfo).ExecuteCommand();
                 }
             }
             return ResultHelper.ServerError<string>("账号密码错误");

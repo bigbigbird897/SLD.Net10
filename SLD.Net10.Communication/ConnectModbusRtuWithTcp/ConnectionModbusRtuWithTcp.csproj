@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\SLD.Net10.Common\SLD.Net10.Common.csproj" />
+    <ProjectReference Include="..\..\SLD.Net10.Model\SLD.Net10.Model.csproj" />
   </ItemGroup>
 
 </Project>

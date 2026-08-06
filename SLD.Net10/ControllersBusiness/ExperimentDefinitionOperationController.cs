@@ -2,11 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SLD.Net10.Common;
+using SLD.Net10.Common.FunctionHelper;
 using SLD.Net10.Common.WebApiUnifiedReturn;
 using SLD.Net10.IService;
 using SLD.Net10.IService.Entity;
-using SLD.Net10.Model.Business.ModelOfExperimentDefinOpera;
+using SLD.Net10.Model.ControllerModuleEntity.Business.ModelOfExperimentDefinOpera;
+using SLD.Net10.Model.ControllerModuleEntity.Business.ModelOfExperimentDefinOpera.DbEntity;
 using SLD.Net10.Service;
 using SLD.Net10.Service.CommandCustomizeExecutor;
 using System.IO;

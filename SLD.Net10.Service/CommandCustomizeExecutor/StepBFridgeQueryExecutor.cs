@@ -27,7 +27,7 @@ namespace SLD.Net10.Service.CommandCustomizeExecutor
             string layer = resolvedParams["Layer"].ToString();
 
             Log.Logger.Information($"[StepB] 查询冰箱：列{col} 层{layer}");
-            await Task.Delay(1200, token);
+            await Task.Delay(1000, token);
 
             // 输出，供StepC使用
             result.OutputVars["BarCode"] = $"BAR_{col}_{layer}_001";

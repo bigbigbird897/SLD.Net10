@@ -15,6 +15,7 @@ using Serilog.Events;
 using Serilog.Filters;
 using SLD.Net10.ComponentConfig;
 using SLD.Net10.Extension.ComponentConfig;
+using SLD.Net10.Extension.FrameHelper;
 using SLD.Net10.IService;
 using SLD.Net10.Repository;
 using SLD.Net10.Service;
@@ -41,7 +42,7 @@ namespace SLD.Net10
                 .ConfigureContainer<ContainerBuilder>(containerBuilder =>
                 {
                     containerBuilder.RegisterModule<AutofacModuleConfig>();
-                    containerBuilder.RegisterModule<AutofacPropertityModuleReg>();
+                    containerBuilder.RegisterModule<AutofacPropertityModuleRegConfig>();
                 });
 
             builder.Services.Replace(
@@ -93,7 +94,7 @@ namespace SLD.Net10
                     }
                 );
                 // 注册自动Tag分组过滤器（核心）
-                options.OperationFilter<SwaggerTagGroupFilter>();
+                options.OperationFilter<SwaggerTagGroupFilterConfig>();
                 // 定义 JWT 授权方案
                 /*
                  * Bearer 是 HTTP 认证方案（Authentication Scheme）名称
@@ -137,7 +138,7 @@ namespace SLD.Net10
             #endregion AutoMapper 对象映射工具注册
 
             #region 全局配置类注册
-            builder.Services.AddSingleton(new AppSettingsConfig(builder.Configuration));
+            builder.Services.AddSingleton(new AppSettingsHelper(builder.Configuration));
             #endregion 全局配置类注册
 
             /*

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using SLD.Net10.IService;
-using SLD.Net10.Model.Background.ModelOfManageUser;
+using SLD.Net10.Model.ControllerModuleEntity.Background.ModelOfManageUser.DbEntity;
 using SLD.Net10.Repository;
 
 namespace SLD.Net10.Service
