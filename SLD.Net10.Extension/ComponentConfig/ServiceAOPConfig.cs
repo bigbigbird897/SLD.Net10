@@ -1,5 +1,6 @@
 ﻿using Castle.DynamicProxy;
 using Newtonsoft.Json;
+using Serilog;
 using SLD.Net10.Extension.ComponentConfig.Entity;
 using System.Reflection;
 
@@ -138,7 +139,7 @@ namespace SLD.Net10.Extension.ComponentConfig
             // 异步打印日志，不阻塞主线程
             await Task.Run(() =>
             {
-                //_logger.Info($"执行成功-->{JsonConvert.SerializeObject(aopLog)}");
+                Log.Logger.Information($"执行成功-->{JsonConvert.SerializeObject(aopLog)}");
             });
         }
 

@@ -5,21 +5,21 @@ namespace SLD.Net10.Service
 {
     public class ExperimentRuntimePool : IExperimentRuntimePool
     {
-        private readonly ConcurrentDictionary<long, IExperimentManager> _pool = new();
+        private readonly ConcurrentDictionary<string, IExperimentManager> _pool = new();
 
-        public void RemoveManager(long experimentId)
+        public void RemoveManager(string experimentId)
         {
             _pool.TryRemove(experimentId, out _);
         }
 
-        IExperimentManager? IExperimentRuntimePool.GetManager(long experimentId)
+        IExperimentManager? IExperimentRuntimePool.GetManager(string experimentId)
         {
             _pool.TryGetValue(experimentId, out var mgr);
             return mgr;
         }
 
         // 方法修改
-        public void SetManager(long experimentId, IExperimentManager manager)
+        public void SetManager(string experimentId, IExperimentManager manager)
         {
             _pool[experimentId] = manager;
         }

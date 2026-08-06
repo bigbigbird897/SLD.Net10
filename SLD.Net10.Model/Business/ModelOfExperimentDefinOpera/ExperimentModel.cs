@@ -13,7 +13,7 @@ namespace SLD.Net10.Model.Business.ModelOfExperimentDefinOpera
         /// <summary>
         /// 实验唯一编号
         /// </summary>
-        public long ExperimentId { get; set; }
+        public string ExperimentId { get; set; }
 
         /// <summary>
         /// 实验名称

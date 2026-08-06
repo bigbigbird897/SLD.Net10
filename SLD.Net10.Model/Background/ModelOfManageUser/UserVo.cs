@@ -2,8 +2,26 @@
 {
     public class UserVo
     {
-        public string Id { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        //public string Id { get; set; } = string.Empty;
+        public string Username { get; set; }= string.Empty;
+        public string Password { get; set; }= string.Empty;
+        public string[] Roles { get; set; } = Array.Empty<string>();
+        public DateTime LastPasswordChangeTime {  get; set; }= DateTime.MinValue;
     }
+
+    public class UserVoForLogin
+    {
+        //public string Id { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+
+    public class UserVoForAdd
+    {
+        //public string Id { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string[] Roles { get; set; } = Array.Empty<string>();
+    }
+
 }

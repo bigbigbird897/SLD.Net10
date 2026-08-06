@@ -19,7 +19,7 @@ namespace SLD.Net10.Extension.ComponentConfig
         /// <summary>
         /// 生成Token
         /// </summary>
-        public string GenerateToken(long userId, string userName, List<string> roles)
+        public string GenerateToken(string userId, string userName, List<string> roles)
         {
             var jwtConfig = _config.GetSection("Jwt");
             var secretKey = Encoding.UTF8.GetBytes(jwtConfig["SecretKey"]!);

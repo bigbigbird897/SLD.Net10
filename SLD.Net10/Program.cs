@@ -297,7 +297,11 @@ namespace SLD.Net10
                         {
                             var userId = context.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
                             var userName = context.Principal.FindFirstValue(ClaimTypes.Name);
-                            Log.Information("[JWT]认证成功，UserId={UserId},UserName={UserName}", userId, userName);
+                            // ✅多角色，取全部Role Claim
+                            var roleClaims = context.Principal.FindAll(ClaimTypes.Role);
+                            var userRoles = roleClaims.Select(c => c.Value).ToList();
+                            Log.Information("[JWT]认证成功，UserId={UserId},UserName={UserName},Roles={Roles}",
+        userId, userName, string.Join(",", userRoles));
                             return Task.CompletedTask;
                         },
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SLD.Net10.Common;
 using SLD.Net10.Common.WebApiUnifiedReturn;
 using SLD.Net10.IService;
 using SLD.Net10.IService.Entity;
@@ -37,7 +38,7 @@ public class ExperimentDefinitionOperationController : ControllerBase
 
     #region 导出实验
     [HttpPost]
-    public async Task<IActionResult> ExportExperiment(long experimentId)
+    public async Task<IActionResult> ExportExperiment(string experimentId)
     {
         _logger.LogInformation("开始导出实验文件，实验ID：{ExperimentId}", experimentId);
         try
@@ -48,6 +49,7 @@ public class ExperimentDefinitionOperationController : ControllerBase
                 ExperimentName = $"实验_{experimentId}",
                 CreateTime = DateTime.Now,
                 Steps = new[] { "升温", "保温", "降温" },
+                //只需要在这个json字段里面嵌套就行了
                 HardwareParams = new JObject(
                     new JProperty("Temp", 25),
                     new JProperty("Speed", 500)
@@ -97,6 +99,7 @@ public class ExperimentDefinitionOperationController : ControllerBase
              * 1 ExperimentConfigAnalysis(ExperimentModel experimentModel)
              */
             // ============ 建议：通过DI获取所有执行器，不要手动new ============
+            // 记录当前总共有多少个命令，放到变量中
             var executors = new List<ICommandCustomizeExecutor>()
             {
                 new StepACentrifugeTempExecutor(),
@@ -112,7 +115,8 @@ public class ExperimentDefinitionOperationController : ControllerBase
                 new ExperimentCommand
                 {
                     CommandName = "StepA_CentrifugeTemp",
-                    InputParams = new Dictionary<string, string> { { "TargetTemp", "45" } },
+                    //InputParams = new Dictionary<string, string> { { "TargetTemp", "45" } },
+                    InputParams = (new ConfigPipettingEquipment{AbsorbVolume=5.0}).ToDictString()
                 },
                 new ExperimentCommand
                 {
@@ -159,7 +163,7 @@ public class ExperimentDefinitionOperationController : ControllerBase
             _experimentManager.LoadScheme(scheme);
 
             // 存入全局运行池，使用实验Id关联
-            long expId = experimentModel.ExperimentId;
+            string expId = experimentModel.ExperimentId;
             _runtimePool.SetManager(expId, _experimentManager);
             _logger.LogInformation(
                 "加载实验成功，_runtimePool实例Hash=0x{Hash:X8}",
@@ -195,7 +199,7 @@ public class ExperimentDefinitionOperationController : ControllerBase
 
     #region 实验运行控制
     [HttpPost("RunExperiment")]
-    public async Task<ApiResult<object>> RunExperiment(long experimentId)
+    public async Task<ApiResult<object>> RunExperiment(string experimentId)
     {
         _logger.LogInformation("开始执行启动实验，实验ID：{ExperimentId}", experimentId);
         try
@@ -245,7 +249,7 @@ public class ExperimentDefinitionOperationController : ControllerBase
     }
 
     [HttpPost("PauseExperiment")]
-    public async Task<ApiResult<object>> PauseExperiment(long experimentId)
+    public async Task<ApiResult<object>> PauseExperiment(string experimentId)
     {
         _logger.LogInformation("执行实验暂停操作，实验ID：{ExperimentId}", experimentId);
         try
@@ -266,7 +270,7 @@ public class ExperimentDefinitionOperationController : ControllerBase
     }
 
     [HttpPost("ResumeExperiment")]
-    public async Task<ApiResult<object>> ResumeExperiment(long experimentId)
+    public async Task<ApiResult<object>> ResumeExperiment(string experimentId)
     {
         _logger.LogInformation("执行恢复实验操作，实验ID：{ExperimentId}", experimentId);
         try
@@ -287,7 +291,7 @@ public class ExperimentDefinitionOperationController : ControllerBase
     }
 
     [HttpPost("StopExperiment")]
-    public async Task<ApiResult<object>> StopExperiment(long experimentId)
+    public async Task<ApiResult<object>> StopExperiment(string experimentId)
     {
         _logger.LogInformation("执行终止实验操作，实验ID：{ExperimentId}", experimentId);
         try

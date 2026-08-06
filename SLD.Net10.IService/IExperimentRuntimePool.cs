@@ -11,12 +11,12 @@ namespace SLD.Net10.IService
     public interface IExperimentRuntimePool
     {
         /// <summary>根据实验Id获取运行实例，不存在返回null</summary>
-        IExperimentManager? GetManager(long experimentId);
+        IExperimentManager? GetManager(string experimentId);
 
         /// <summary>存入实验管理器</summary>
-        void SetManager(long experimentId, IExperimentManager manager);
+        void SetManager(string experimentId, IExperimentManager manager);
 
         /// <summary>移除实验管理器</summary>
-        void RemoveManager(long experimentId);
+        void RemoveManager(string experimentId);
     }
 }
